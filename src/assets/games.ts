@@ -10,5 +10,5 @@ export function removeBlackJackGame(game:BlackJack){
 }
 
 export function removeWordleGame(game:Wordle){
-
+    wordleGames.splice(wordleGames.indexOf(game), 1)
 }
