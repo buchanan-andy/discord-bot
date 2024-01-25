@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+      "target": "es2020",
+      "lib": ["ES2020.BigInt", "ES2019"],
+      "module": "commonjs", // Corrected to commonjs
+      "outDir": "./dist"
+    },
+    "include": ["src/**/*.ts"]
+}

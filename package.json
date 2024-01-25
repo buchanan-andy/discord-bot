@@ -1,0 +1,18 @@
+{
+  "name": "discordbot",
+  "version": "1.0.0",
+  "description": "Custom Discord Bot",
+  "main": "bot.js",
+  "scripts": {
+    "build": "npx tsc",
+    "dev": "npx tsc && node dist/bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "foxthebomb",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.1",
+    "typescript": "^5.3.3"
+  }
+}
