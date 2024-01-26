@@ -10,7 +10,7 @@ type Command = {
     [key: string]: Function;
 }
 
-export const commands = {
+export const commands:Command = {
     tobitime: (message:Message)=>{
             message.react(getRandomTobi())
             message.react('⏰')
@@ -40,20 +40,23 @@ export const commands = {
         let attach = new AttachmentBuilder(cat, {name:'cat.png'})
         message.reply({files: [attach]});
     },
+    poopman: async(message:Message)=>{
+        let res = await fetch('https://media1.tenor.com/m/XvkmyZHapHcAAAAC/chocolate-eating-chocolate.gif')
+        let image = Buffer.from(await res.arrayBuffer());
+        let attach = new AttachmentBuilder(image,{name:'poopman.gif'})
+        message.reply({files: [attach]})
+    },
     blackjack: (message:Message)=> {
         if (!blackjackGames.some(obj => obj.player === message.author.username)){
             let game = new BlackJack(message.author.username)
             blackjackGames.push(game);
             game.hit();
             game.hit();
-            game.tobiHit();
-            game.tobiHit();
+            game.botHit();
+            game.botHit();
             
-            message.reply(`Welcome to PlackJack!\nLets Play!\nType 'hit me' to hit, 'stay' to stay, and 'my hand' to check your score.`);
-            message.reply(`
-                            Your Hand: ${game.myHand()}\n);
-                            Dealer Shows: ${game.tobiHand[1].name}
-                        `);
+            message.reply(`Welcome to PlackJack!\nLets Play!\nType '!hit' to hit, '!stay' to stay, and '!myhand' to check your score.`);
+            message.reply(`Your Hand: ${game.myHand()}\nDealer Shows: ${game.botHand[1].name}`);
           }
           else {
           message.reply(`You already have an active game!`);
@@ -91,7 +94,7 @@ export const commands = {
       
         let game = blackjackGames.find(obj => obj.player === message.author.username);
           message.reply(`${message.author.username} stays. My turn mwehehe!`)
-          let response = game!.tobiPlay();
+          let response = game!.botPlay();
           message.reply(response);
           removeBlackJackGame(game);
     },

@@ -1,29 +1,29 @@
 export class Wordle {
 
     player:string = ''
-    guesses:string[] = []
-    word:string = ''
-    wordLetters:string[] = []
+    playerGuesses:string[] = []
+    wordle:string = ''
+    wordleLetters:string[] = []
 
     yellow = '🟨'
     green = '🟩'
     grey = '⬛'
 
 
-    constructor(player) {
+    constructor(player:string) {
 
         this.player = player
     }
 
-    setWord(word){
-        this.word = word
-        this.wordLetters = this.word.split('')
+    setWord(word:string){
+        this.wordle = word
+        this.wordleLetters = this.wordle.split('')
     }
 
-    guessWord(word){
+    guessWord(word:string){
         let response = ['','','','','']
         let letters = word.split('');
-        let guessInstance = [...this.wordLetters];
+        let guessInstance = [...this.wordleLetters];
 
         for (let i = 0; i < letters.length; i++) {
             if (guessInstance.includes(letters[i])) {
@@ -45,23 +45,23 @@ export class Wordle {
             }
           }
 
-          let string = `${response.join('')} ${word}`
-          this.guesses.push(string)
+          let thisGuess = `${response.join('')} ${word}`
+          this.playerGuesses.push(thisGuess)
 
           // If you got the word
-          if (response.every((color, index) => color === this.green)){
-            return `${this.guesses.join('\n')}\nYou got it! It only took ${this.guesses.length} tries!\nPlay again sometime!`
+          if (response.every((color) => color === this.green)){
+            return `${this.playerGuesses.join('\n')}\nYou got it! It only took ${this.playerGuesses.length} tries!\nPlay again sometime!`
           }
 
-          // Run out of guesses
-          if (this.guesses.length == 6) {
-            return `${this.guesses.join('\n')}\nMwehehe I win!\nThe word was ${this.word}.\nPlay again sometime!`
+          // Run out of playerGuesses
+          if (this.playerGuesses.length == 6) {
+            return `${this.playerGuesses.join('\n')}\nMwehehe I win!\nThe word was ${this.wordle}.\nPlay again sometime!`
           }
 
-        return string
+        return thisGuess
     }
 
     myGuesses(){
-        return this.guesses.join('\n')
+        return this.playerGuesses.join('\n')
     }
 }

@@ -1,6 +1,7 @@
-import { Client, Events, GatewayIntentBits } from 'discord.js';
+import { Client, Events, GatewayIntentBits, TextChannel } from 'discord.js';
 import { config } from 'dotenv';
 import { commands } from './functions/messageHandler';
+import { channels as serverChannels} from './assets/channels'
 
 config();
 
@@ -14,7 +15,7 @@ const client = new Client({
 
 function readyDiscord() {
   console.log('😺 ', client.user?.tag);
-  //client.channels.cache.get(generalID).send('Meow Meow I am here!');
+  (client.channels.cache.get(serverChannels.general) as TextChannel).send('Meow Meow! I am here!');
 }
 
 client.on("messageCreate", async (message) => {

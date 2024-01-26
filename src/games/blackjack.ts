@@ -4,91 +4,90 @@ export class BlackJack {
 
     player:string = ''
     playerHand:Card[] = []
-    tobiHand:Card[] = []
+    botHand:Card[] = []
 
 
 
-    constructor(player) {
+    constructor(player:string) {
         this.player = player;
     }
 
-     addPlayerCard(card) {
-        this.playerHand.push(card)
-        if (this.getPlayerScore() >21 && this.playerHand.some(obj => obj.value === 11)){
-           let ace = this.playerHand.find(obj => obj.value === 11);
-           ace!.value = 1;
-        }
-        
+    getCard(){
+        let index = Math.floor(Math.random() * cards.length)
+        let card = cards[index]
+        cards.splice(index, 1);
+        return card;
     }
 
-    getPlayerScore():number{
-        return this.playerHand.reduce((acc, obj) => acc + obj.value, 0);
+    getScore(hand:Card[]):number{
+        return hand.reduce((acc, obj) => acc + obj.value, 0);
     }
 
-    getTobiScore():number{
-        return this.tobiHand.reduce((acc, obj) => acc + obj.value, 0);
-    }
-
-    addTobiCard(card){
-        this.tobiHand.push(card)
-        if (this.getTobiScore()>21 && this.tobiHand.some(obj => obj.value === 11)){
-            let ace =  this.tobiHand.find(obj => obj.value === 11);
+    checkAce(hand:Card[]){
+        if (this.getScore(hand) >21 && hand.some(obj => obj.value === 11)){
+            let ace = hand.find(obj => obj.value === 11);
             ace!.value = 1;
          }
     }
 
+     addPlayerCard(card:Card) {
+        this.playerHand.push(card)
+        this.checkAce(this.playerHand)
+        
+    }
+
+
+    addBotCard(card:Card){
+        this.botHand.push(card)
+        this.checkAce(this.botHand)
+    }
+
     hit(){
-        let index = Math.floor(Math.random() * cards.length)
-        let card = cards[index]
-        cards.splice(index, 1);
-        this.addPlayerCard(card);
+        this.addPlayerCard(this.getCard());
         return this.checkScore();
     }
 
-    tobiHit(){
-        let index = Math.floor(Math.random() * cards.length)
-        let card = cards[index]
-        cards.splice(index, 1);
-        this.addTobiCard(card);
+    botHit(){
+        const card = this.getCard();
+        this.addBotCard(card);
         return card.name
     }
 
-    tobiHitCards(cards){
+    botGetHitCards(cards:string){
         let out = cards;
        // Soft 17
-       if (this.tobiHand.find(obj => obj.value === 11) && this.getTobiScore() == 17 || this.getTobiScore()<17){
-        let card = this.tobiHit();
+       if (this.botHand.find(obj => obj.value === 11) && this.getScore(this.botHand) <= 17){
+        let card = this.botHit();
         out = `${out}I hit. ${card}.\n`;
 
-       }
-        if (this.getTobiScore() < 17) {
-            out = this.tobiHitCards(out);
+        if (this.getScore(this.botHand) < 17) {
+            out = this.botGetHitCards(out);
         }
-
+    }
         return out;
     }
 
-    tobiPlay() {
-        let response = this.tobiHitCards('');
+    botPlay() {
+        let response = this.botGetHitCards('');
 
-        if (this.getTobiScore() == 21){
-            response = `${response}My Hand: ${this.tobiHand.map(card => card.name).join(', ')}. Mwehehe I win!`
+        if (this.getScore(this.botHand) == 21){
+            response = `${response}My Hand: ${this.botHand.map(card => card.name).join(', ')}. Mwehehe I win!`
         }
 
-        if (this.getTobiScore()>21){
-            response = `${response}My Hand: ${this.tobiHand.map(card => card.name).join(', ')}, ${this.getTobiScore()} Aww man, I lost!`
+        if (this.getScore(this.botHand)>21){
+            response = `${response}My Hand: ${this.botHand.map(card => card.name).join(', ')}, ${this.getScore(this.botHand)} Aww man, I lost!`
         }
 
-        if (this.getTobiScore() >= 17 && this.getTobiScore() <=21){
+        if (this.getScore(this.botHand) >= 17 && this.getScore(this.botHand) <21){
             let winner = ''
-            if (this.getPlayerScore() > 21 || (this.getPlayerScore()>=21 && this.getTobiScore() >= this.getPlayerScore()) || this.getTobiScore() >= this.getPlayerScore()){
+            if (this.getScore(this.playerHand) > 21 || (this.getScore(this.playerHand)<=21 && this.getScore(this.botHand) >= this.getScore(this.playerHand)) || this.getScore(this.botHand) >= this.getScore(this.playerHand)){
                 winner = 'Mwehehe I win!'
             }
             else {
                 winner = 'Aww man, you won!'
             }
             
-             response = `${response}I stay. My Hand: ${this.tobiHand.map(card => card.name).join(', ')}. You had ${this.getPlayerScore()}, I had ${this.getTobiScore()}. ${winner}`
+             response = `${response}I stay. My Hand: ${this.botHand.map(card => card.name).join(', ')}. You had ${this.getScore(this.playerHand)}, I had ${this.getScore(this.botHand)}. ${winner}`
         }
 
         return response
@@ -96,21 +95,21 @@ export class BlackJack {
     }
 
     myHand(){
-        return `${this.playerHand.map(card => card.name).join(', ')}, ${this.getPlayerScore()}`
+        return `${this.playerHand.map(card => card.name).join(', ')}, ${this.getScore(this.playerHand)}`
     }
 
     checkScore() {
 
-        if (this.getPlayerScore() > 21 ) {
+        if (this.getScore(this.playerHand) > 21 ) {
             return `${this.myHand()}, Ooops you busted! the Tuna is mine!`
         }
 
-        return `${this.playerHand.map(card => card.name).join(', ')}, ${this.getPlayerScore()}`
+        return `${this.playerHand.map(card => card.name).join(', ')}, ${this.getScore(this.playerHand)}`
 
     }
 
     gameOver() {
-        return (this.getPlayerScore() >=21 || this.getTobiScore() >= 21);
+        return (this.getScore(this.playerHand) >=21 || this.getScore(this.botHand) >= 21);
     }
 
 
