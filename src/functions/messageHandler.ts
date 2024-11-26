@@ -1,10 +1,12 @@
-import { Message } from "discord.js";
+import { Message, TextChannel } from "discord.js";
 import { serverEmoji, getRandomTobi } from "../assets/customEmoji"
 import { capitalize } from "../assets/helpers"
 import { AttachmentBuilder } from "discord.js";
 import { blackjackGames, wordleGames, removeBlackJackGame,removeWordleGame } from "../assets/games";
 import { BlackJack } from "../games/blackjack";
 import { Wordle } from "../games/wordle";
+import { channels as serverChannels} from '../assets/channels'
+import { chubbyEmu } from "../assets/chubbyemu";
 
 type Command = {
     [key: string]: Function;
@@ -47,6 +49,11 @@ export const commands:Command = {
         message.reply({files: [attach]})
     },
     blackjack: (message:Message)=> {
+
+        if (!(message.channel.id === serverChannels.games)){
+          return
+        }
+
         if (!blackjackGames.some(obj => obj.player === message.author.username)){
             let game = new BlackJack(message.author.username)
             blackjackGames.push(game);
@@ -63,6 +70,10 @@ export const commands:Command = {
           }
     },
     hit: (message:Message)=> {
+      if (!(message.channel.id === serverChannels.games)){
+        return
+      }
+
         if (!blackjackGames.some(obj => obj.player === message.author.username)){
             message.reply(`You have no active game!`);
             return
@@ -78,6 +89,10 @@ export const commands:Command = {
        
     },
     myhand: (message:Message)=> {
+      if (!(message.channel.id === serverChannels.games)){
+        return
+      }
+
         if (!blackjackGames.some(obj => obj.player === message.author.username)){
             message.reply(`You have no active game!`);
             return
@@ -87,6 +102,11 @@ export const commands:Command = {
           message.reply(game!.myHand());
     },
     stay: (message:Message)=> {
+      if (!(message.channel.id === serverChannels.games)){
+        return
+      }
+
+
         if (!blackjackGames.some(obj => obj.player === message.author.username)){
             message.reply(`You have no active game!`);
             return
@@ -99,6 +119,10 @@ export const commands:Command = {
           removeBlackJackGame(game);
     },
     wordle: async (message:Message)=> {
+      if (!(message.channel.id === serverChannels.games)){
+        return
+      }
+
         if (!wordleGames.some(obj => obj.player === message.author.username)){
             let wordle = new Wordle(message.author.username);
             let res = await fetch('https://random-word-api.vercel.app/api?words=1&length=5');
@@ -112,6 +136,11 @@ export const commands:Command = {
           }
     },
     guess: async (message:Message)=> {
+      if (!(message.channel.id === serverChannels.games)){
+        return
+      }
+
+
         if (!wordleGames.some(obj => obj.player === message.author.username)){
             return
         }
@@ -151,6 +180,11 @@ export const commands:Command = {
           }
     },
     mywords: (message:Message)=> {
+      if (!(message.channel.id === serverChannels.games)){
+        return
+      }
+
+
         if (!wordleGames.some(obj => obj.player === message.author.username)){
             message.reply(`You have no active game!`);
             return
@@ -162,7 +196,30 @@ export const commands:Command = {
     },
     help: (message: Message)=> {
          message.reply(`Tobi is here to help!\nTobiBot supports the following commands:\n${Object.keys(commands).map(command => `\t!${command}`).join('\n')}`);
-  }
+  },
+  tobilook: async(message: Message)=> {
+    let res = await fetch('https://cdn.discordapp.com/attachments/759061913014632470/1203207821294964806/tobi.gif')
+    let image = Buffer.from(await res.arrayBuffer());
+    let attach = new AttachmentBuilder(image,{name:'tobi.gif'})
+      message.reply({files: [attach]})
+  },
+
+  chubbyemu: async (message: Message)=> {
+    let title = chubbyEmu();
+    let subject = title.trim().replace(/\.$/, '').split(' ').pop();
+    let res = await fetch(`https://openi.nlm.nih.gov/api/search?it=c%2Cm%2Cmc%2Cp%2Cu%2Cx%2Cxm&m=1&n=20&query=${subject}`);
+    let out:any = await res.json();
+    let imagesList = out.list.filter(item => item.imgLarge);
+    if (imagesList.length > 0) {
+      let imageData = await fetch(`https://openi.nlm.nih.gov${imagesList[Math.floor(Math.random() * imagesList.length)].imgLarge}`);
+      let image = Buffer.from(await imageData.arrayBuffer());
+      let attachment = new AttachmentBuilder(image,{name:`${subject}.png`})
+      message.reply({
+          content:title,
+          files: [attachment]
+        });
+      }
+    else  message.reply(title);
 }
 
-    
+}
