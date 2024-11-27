@@ -1,4 +1,4 @@
 .env
 /dist
 /node_modules
-assets/media
+/src/assets/media
