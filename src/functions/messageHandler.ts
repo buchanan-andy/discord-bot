@@ -7,6 +7,7 @@ import { BlackJack } from "../games/blackjack";
 import { Wordle } from "../games/wordle";
 import { channels as serverChannels} from '../assets/channels'
 import { chubbyEmu } from "../assets/chubbyemu";
+import * as path from 'path';
 
 type Command = {
     [key: string]: Function;
@@ -51,7 +52,7 @@ export const commands:Command = {
     blackjack: (message:Message)=> {
 
         if (!(message.channel.id === serverChannels.games)){
-          return
+          message.reply(`You may only play Blackjack in the games channel`);
         }
 
         if (!blackjackGames.some(obj => obj.player === message.author.username)){
@@ -120,6 +121,7 @@ export const commands:Command = {
     },
     wordle: async (message:Message)=> {
       if (!(message.channel.id === serverChannels.games)){
+        message.reply(`You may only play Wordle in the games channel`);
         return
       }
 
@@ -201,6 +203,11 @@ export const commands:Command = {
     let res = await fetch('https://cdn.discordapp.com/attachments/759061913014632470/1203207821294964806/tobi.gif')
     let image = Buffer.from(await res.arrayBuffer());
     let attach = new AttachmentBuilder(image,{name:'tobi.gif'})
+      message.reply({files: [attach]})
+  },
+  mightymax: async(message: Message)=> {
+    const filePath = path.resolve(__dirname, '..', 'assets', 'media', 'pjoffroad.png');
+    let attach = new AttachmentBuilder(filePath,{name:'pjoffroad.png'})
       message.reply({files: [attach]})
   },
 
